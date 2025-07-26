@@ -193,3 +193,122 @@ Promise.all()	Waits for all promises to resolve
 Promise.race()	Resolves/rejects as soon as one settles
 Promise.allSettled()	Returns result for each promise, success or fail
 Promise.any()	Resolves when any one promise resolves
+
+
+
+
+
+
+
+
+
+## Day-4
+
+- Connecting to MongoDB
+Used the mongoose library to connect to a MongoDB database.
+Stored the MongoDB URI in an .env file for security and reusability.
+Created a separate configuration file (db.js) to handle the database connection logic.
+Handled successful and failed connection scenarios with appropriate console messages.
+
+- Understanding Mongoose Models and Schemas
+Defined schemas using mongoose.Schema to structure how data should look in MongoDB.
+Added validation rules (e.g., required fields, default values) in the schema.
+Converted schemas into models, which are used to interact with MongoDB collections.
+Followed a modular approach by separating models into their own files.
+
+- CRUD Operations with MongoDB
+Implemented full CRUD (Create, Read, Update, Delete) operations using Express routes and Mongoose:
+
+- Create
+Created new documents in the MongoDB collection using the .create() method.
+Accepted JSON data from the request body.
+
+- Read
+Fetched all documents using .find().
+Retrieved a single document using .findById().
+Handled cases when the requested document does not exist.
+
+- Update
+Updated documents using .findByIdAndUpdate().
+Ensured updated values are returned using the { new: true } option.
+Used { runValidators: true } to enforce schema validation during updates.
+
+- Delete
+Deleted a document by its ID using .findByIdAndDelete().
+Returned appropriate success or error messages based on the operation outcome.
+
+
+
+## Day 5
+- Overview
+Today's focus was on building a clean and scalable backend API using Express.js and MongoDB, following best practices like MVC architecture, error handling, and API testing.
+
+- Structuring the Project (MVC Architecture)
+Followed the Model-View-Controller (MVC) pattern to separate concerns.
+
+Models: Handle MongoDB schema and data logic.
+Controllers: Contain business logic and data manipulation.
+Routes: Handle endpoint definitions and routing requests to controllers.
+
+- Key Takeaways
+Built a functional and clean CRUD API using Express and MongoDB.
+Followed MVC architecture for better maintainability and scalability.
+Tested API endpoints thoroughly using Postman.
+Implemented proper error handling and used async/await syntax.
+Secured configuration using environment variables.
+
+
+
+
+# HTTP Status Codes Summary
+
+| Class         |   Code | Name                          | Description                                          |
+|:--------------|-------:|:------------------------------|:-----------------------------------------------------|
+| Informational |    100 | Continue                      | Client should continue with the request.             |
+| Informational |    101 | Switching Protocols           | Server switches protocols per client's request.      |
+| Informational |    102 | Processing                    | Request received, no response available yet.         |
+| Informational |    103 | Early Hints                   | Server suggests preload resources.                   |
+| Successful    |    200 | OK                            | Request succeeded. Response depends on HTTP method.  |
+| Successful    |    201 | Created                       | Request succeeded and a new resource was created.    |
+| Successful    |    202 | Accepted                      | Request accepted but not yet acted upon.             |
+| Successful    |    203 | Non-Authoritative Information | Metadata from local or third-party copy.             |
+| Successful    |    204 | No Content                    | No content to send for this request.                 |
+| Successful    |    205 | Reset Content                 | Reset the document view which sent the request.      |
+| Successful    |    206 | Partial Content               | Partial response to a range request.                 |
+| Successful    |    207 | Multi-Status                  | Multiple responses for WebDAV.                       |
+| Successful    |    208 | Already Reported              | Avoid repeated enumeration in WebDAV.                |
+| Successful    |    226 | IM Used                       | GET response with delta encoding.                    |
+| Redirection   |    300 | Multiple Choices              | Client must choose one of multiple responses.        |
+| Redirection   |    301 | Moved Permanently             | Resource has been permanently moved.                 |
+| Redirection   |    302 | Found                         | Resource temporarily located at different URI.       |
+| Redirection   |    303 | See Other                     | Redirect to another URI using GET.                   |
+| Redirection   |    304 | Not Modified                  | Response not modified; use cached version.           |
+| Redirection   |    305 | Use Proxy                     | Must use a proxy to access the resource.             |
+| Redirection   |    306 | Unused                        | Code reserved but no longer used.                    |
+| Redirection   |    307 | Temporary Redirect            | Use same method to access different URI temporarily. |
+| Redirection   |    308 | Permanent Redirect            | Resource now permanently at another URI.             |
+| Client Error  |    400 | Bad Request                   | Client sent invalid request.                         |
+| Client Error  |    401 | Unauthorized                  | Authentication is required.                          |
+| Client Error  |    402 | Payment Required              | Reserved for future use.                             |
+| Client Error  |    403 | Forbidden                     | Client does not have access rights.                  |
+| Client Error  |    404 | Not Found                     | Server can't find the requested resource.            |
+| Client Error  |    405 | Method Not Allowed            | Request method not supported by the resource.        |
+| Client Error  |    406 | Not Acceptable                | No acceptable representation found.                  |
+| Client Error  |    407 | Proxy Authentication Required | Authenticate with proxy first.                       |
+| Client Error  |    408 | Request Timeout               | Server timed out waiting for request.                |
+| Client Error  |    409 | Conflict                      | Request conflicts with server state.                 |
+| Client Error  |    410 | Gone                          | Resource permanently deleted.                        |
+| Client Error  |    411 | Length Required               | Content-Length header is missing.                    |
+| Client Error  |    412 | Precondition Failed           | Request preconditions not met.                       |
+| Client Error  |    413 | Content Too Large             | Request body is too large.                           |
+| Client Error  |    414 | URI Too Long                  | Requested URI too long to handle.                    |
+| Client Error  |    415 | Unsupported Media Type        | Server doesn't support the data format.              |
+| Client Error  |    416 | Range Not Satisfiable         | Requested range is invalid.                          |
+| Client Error  |    417 | Expectation Failed            | Expect request-header can't be met.                  |
+| Client Error  |    418 | I'm a teapot                  | Server refuses to brew coffee with a teapot.         |
+| Server Error  |    500 | Internal Server Error         | Generic server error.                                |
+| Server Error  |    501 | Not Implemented               | Server doesn't support the method.                   |
+| Server Error  |    502 | Bad Gateway                   | Invalid response from upstream server.               |
+| Server Error  |    503 | Service Unavailable           | Server is overloaded or down.                        |
+| Server Error  |    504 | Gateway Timeout               | Server didn't get response in time.                  |
+| Server Error  |    505 | HTTP Version Not Supported    | Server doesn't support HTTP version.                 |
