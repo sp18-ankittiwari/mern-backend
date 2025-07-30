@@ -312,3 +312,5 @@ Secured configuration using environment variables.
 | Server Error  |    503 | Service Unavailable           | Server is overloaded or down.                        |
 | Server Error  |    504 | Gateway Timeout               | Server didn't get response in time.                  |
 | Server Error  |    505 | HTTP Version Not Supported    | Server doesn't support HTTP version.                 |
+
+## Day 6, 7
