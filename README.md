@@ -555,6 +555,38 @@ Use stored procedures to enforce complex business logic inside the database.
 ## Day 12
 Started working on school management system task and completed till evening.
 
+- School Management System
+Database Setup
+Create a PostgreSQL database named: SchoolManagementSystem
+Design and create the following tables:
+Students
+Courses
+Enrollments
+enrollment_id (Primary Key)
+student_id (Foreign Key → Students)
+course_id (Foreign Key → Courses)
+enrollment_date
+- Data Population
+Insert at least:
+10 records into the Students table
+5 records into the Courses table
+15 records into the Enrollments table
+Use INSERT INTO SQL statements for all data entry
+- Query Tasks
+Retrieve the list of all students with their enrolled courses.
+List all courses along with the number of students enrolled in each.
+Display all students not enrolled in any course.
+Get the list of students enrolled in more than one course.
+Show all courses with no enrolled students.
+Display the student who enrolled most recently.
+- Data Modification Tasks
+Update course fee for "Mathematics" to 5500.
+Delete all enrollments for a student who has dropped out.
+Change course duration for "Computer Science" to 18 weeks.
+- Constraints & Indexing
+Add a UNIQUE constraint to the phone column in the Students table.
+Add an INDEX on the enrollment_date column in the Enrollments table.
+Add a CHECK constraint on the fee column in the Courses table to ensure fee >= 1000.
 
 
 
