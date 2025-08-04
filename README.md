@@ -314,3 +314,247 @@ Secured configuration using environment variables.
 | Server Error  |    505 | HTTP Version Not Supported    | Server doesn't support HTTP version.                 |
 
 ## Day 6, 7
+i have completed the PMS task and generate the PR
+
+
+## day 8 
+SQL Overview
+SQL = Structured Query Language
+Used for managing and querying relational databases
+Common dialects: PostgreSQL
+
+- Database Terminology
+Database: A structured collection of related data
+Table: Stores data in rows and columns
+Row: A single record (entry)
+Column: An attribute or field
+Primary Key: Uniquely identifies each row
+Foreign Key: References the primary key in another table to establish relationships
+
+- Environment Setup
+Install PostgreSQL 
+Verify installation using:
+PostgreSQL: psql
+Create a test database:
+CREATE DATABASE testdb;
+- Basic SQL Commands
+CREATE TABLE – Create a new table
+CREATE TABLE users (
+id SERIAL PRIMARY KEY,
+name VARCHAR(100),
+email VARCHAR(100) UNIQUE,
+birthdate DATE,
+is_active BOOLEAN
+);
+DROP TABLE – Delete a table
+DROP TABLE users;
+ALTER TABLE – Modify a table structure
+ALTER TABLE users ADD COLUMN signup_date DATE;
+- Common SQL Data Types
+INT – Integer numbers
+VARCHAR(n) – Variable-length string (max n characters)
+DATE – Date (YYYY-MM-DD)
+BOOLEAN – True/False
+SERIAL – Auto-incrementing integer (PostgreSQL)
+
+
+## Day 9
+
+ Data Manipulation Language (DML) Commands
+1. INSERT
+Adds new rows into a table.
+Syntax:
+INSERT INTO table_name (column1, column2, ...) VALUES (value1, value2, ...);
+2. UPDATE
+Modifies existing records in a table.
+Use with WHERE to target specific rows.
+Syntax:
+UPDATE table_name SET column1 = value1, column2 = value2 WHERE condition;
+Example:
+3. DELETE
+Removes rows from a table.
+Use with WHERE to avoid deleting all records.
+Syntax:
+DELETE FROM table_name WHERE condition;
+4. TRUNCATE
+Deletes all rows from a table instantly and resets identity (auto-increment) columns.
+Cannot be rolled back (in most databases).
+TRUNCATE TABLE table_name;
+- Basic Data Querying
+5. SELECT
+Retrieves data from one or more tables.
+Syntax:
+SELECT column1, column2 FROM table_name;
+6. WHERE
+Filters results based on a condition.
+Syntax:
+SELECT * FROM table_name WHERE condition;
+7. ORDER BY
+Sorts the result set by one or more columns.
+Default is ascending (ASC); use DESC for descending.
+Syntax:
+SELECT * FROM users ORDER BY name ASC;
+8. LIMIT
+Limits the number of rows returned.
+Useful for pagination or sampling data.
+Syntax:
+SELECT * FROM users LIMIT 10;
+9. DISTINCT
+Removes duplicate values from the result set.
+Syntax:
+SELECT DISTINCT column_name FROM table_name;
+- Logical Operators in WHERE Clause
+10. AND
+Combines conditions – all must be true.
+SELECT * FROM users WHERE is_active = true AND country = 'USA';
+11. OR
+Combines conditions – at least one must be true.
+SELECT * FROM users WHERE country = 'USA' OR country = 'UK';
+12. NOT
+Negates a condition.
+SELECT * FROM users WHERE NOT is_active;
+- Tips
+  > Always use WHERE with UPDATE or DELETE to avoid modifying all records.
+  > Use DISTINCT only when necessary, as it can slow down large queries.
+  > TRUNCATE is faster than DELETE for clearing all data, but irreversible.
+  > LIMIT + ORDER BY is commonly used for pagination.
+
+
+## day 10
+Aggregate Functions
+Used to perform calculations on multiple rows and return a single result.
+1. COUNT()
+Returns the number of rows.
+2. SUM()
+Adds all values in a numeric column.
+3. AVG()
+Calculates the average of numeric values.
+4. MIN() / MAX()
+Finds the minimum or maximum value.
+- Grouping Data
+5. GROUP BY
+Groups rows that have the same values in specified columns.
+Often used with aggregate functions.
+6. HAVING
+Filters groups after aggregation (like WHERE but for GROUP BY).
+SELECT department, AVG(salary) FROM employees
+GROUP BY department
+HAVING AVG(salary) > 50000;
+- Joining Tables
+Used to combine rows from two or more tables based on a related column.
+7. INNER JOIN
+Returns matching rows from both tables.
+Example:
+SELECT users.name, orders.total
+FROM users
+INNER JOIN orders ON users.id = orders.user_id;
+8. LEFT JOIN
+Returns all rows from the left table, with matched rows from the right.
+SELECT users.name, orders.total
+FROM users
+LEFT JOIN orders ON users.id = orders.user_id;
+9. RIGHT JOIN
+Returns all rows from the right table, with matched rows from the left.
+SELECT users.name, orders.total
+FROM users
+RIGHT JOIN orders ON users.id = orders.user_id;
+10. FULL JOIN
+Returns all rows when there is a match in one of the tables.
+SELECT users.name, orders.total
+FROM users
+FULL JOIN orders ON users.id = orders.user_id;
+- Nested Queries and Subqueries
+Queries inside another SQL query.
+11. Subquery in SELECT
+Example:
+SELECT name, (SELECT COUNT(*) FROM orders WHERE orders.user_id = users.id) AS total_orders
+FROM users;
+12. Subquery in WHERE
+Example:
+SELECT name FROM users
+WHERE id IN (SELECT user_id FROM orders WHERE total > 100);
+13. Subquery in FROM
+Used to create temporary result sets.
+SELECT dept, avg_salary FROM (
+  SELECT department AS dept, AVG(salary) AS avg_salary
+  FROM employees
+  GROUP BY department
+) AS sub;
+- Tips
+Use GROUP BY only on selected columns, and always aggregate the rest.
+Use aliases for subqueries and join tables for clarity.
+Be cautious with FULL JOIN—may return many NULLs.
+HAVING works after aggregation, WHERE works before.  
+
+
+## day 11
+
+- Database Constraints
+Constraints enforce rules at the table level to maintain data integrity and consistency.
+1. PRIMARY KEY
+Uniquely identifies each row in a table.
+Must be unique and NOT NULL.
+Only one primary key per table.
+2. FOREIGN KEY
+Creates a relationship between two tables.
+References a primary key in another table.
+Ensures referential integrity.
+CREATE TABLE orders (
+  id INT PRIMARY KEY,
+  user_id INT,
+  FOREIGN KEY (user_id) REFERENCES users(id)
+);
+3. UNIQUE
+Ensures all values in a column are different.
+Unlike primary key, a table can have multiple UNIQUE constraints.
+4. NOT NULL
+Prevents null values in a column.
+5. CHECK
+Validates data with a condition.
+6. DEFAULT
+Assigns a default value when no value is provided.
+- Indexing (Performance Optimization)
+7. INDEX
+Improves query performance by speeding up search and filtering.
+Automatically created on primary keys and unique constraints.
+Manual index creation:
+CREATE INDEX idx_email ON users(email);
+Use wisely — too many indexes can slow down INSERT/UPDATE.
+
+- Transactions 
+Ensure data integrity during multi-step operations.
+8. BEGIN / START TRANSACTION
+Begins a transaction block.
+9. COMMIT
+Saves all changes permanently.
+10. ROLLBACK
+Cancels all changes since BEGIN.
+BEGIN;
+UPDATE accounts SET balance = balance - 100 WHERE id = 1;
+UPDATE accounts SET balance = balance + 100 WHERE id = 2;
+COMMIT; -- or ROLLBACK;
+
+- Stored Procedures and Functions (Basics)
+Encapsulate SQL logic for reuse and automation.
+11. Stored Procedure
+A set of SQL statements stored in the database.
+Can accept parameters.
+DELIMITER //
+CREATE PROCEDURE GetUsers()
+BEGIN
+  SELECT * FROM users;
+END //
+DELIMITER ;
+
+- Tips
+Use CHECK for domain-level rules (e.g., age ≥ 18).
+Always index columns used frequently in WHERE, JOIN, or ORDER BY.
+Wrap COMMIT/ROLLBACK logic in error handling for safe rollbacks.
+Use stored procedures to enforce complex business logic inside the database.  
+  
+## Day 12
+Started working on school management system task and completed till evening.
+
+
+
+
