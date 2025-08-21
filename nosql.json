@@ -1,0 +1,335 @@
+// Create or Switch to database.
+use onlineLibrary
+
+// Create books collection with validation
+db.createCollection("books", {
+    validator: {
+      $jsonSchema: {
+        bsonType: "object",
+        required: ["title", "author", "publishedYear", "genre"],
+        properties: {
+          title: {
+            bsonType: "string"
+          },
+          author: {
+            bsonType: "string"
+          },
+          publishedYear: {
+            bsonType: "int"
+          },
+          genre: {
+            bsonType: "array",
+            items: {
+              bsonType: "string"
+            }
+          },
+          availableCopies: {
+            bsonType: "int",
+            minimum: 0
+          },
+          reviews: {
+            bsonType: "array",
+            items: {
+              bsonType: "object",
+              required: ["userId", "rating", "comment"],
+              properties: {
+                userId: {
+                  bsonType: "objectId"
+                },
+                rating: {
+                  bsonType: "int",
+                  minimum: 1,
+                  maximum: 5
+                },
+                comment: {
+                  bsonType: "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+});
+
+// Create users collection with validation
+db.createCollection("users", {
+    validator: {
+      $jsonSchema: {
+        bsonType: "object",
+        required: ["name", "email"],
+        properties: {
+          name: {
+            bsonType: "string"
+          },
+          email: {
+            bsonType: "string"
+          },
+          membershipDate: {
+            bsonType: "date"
+          },
+          borrowedBooks: {
+            bsonType: "array",
+            items: {
+              bsonType: "objectId"
+            }
+          },
+          reviewedBooks: {
+            bsonType: "array",
+            items: {
+              bsonType: "objectId" 
+            }
+          }
+        }
+      }
+    }
+});
+// Create unique index for email
+db.users.createIndex({ email: 1 }, { unique: true });
+
+// Create borrowRecords collection with validation
+db.createCollection("borrowRecords", {
+    validator: {
+      $jsonSchema: {
+        bsonType: "object",
+        required: ["userId", "bookId", "borrowDate", "status"],
+        properties: {
+          userId: {
+            bsonType: "objectId"
+          },
+          bookId: {
+            bsonType: "objectId"
+          },
+          borrowDate: {
+            bsonType: "date"
+          },
+          returnDate: {
+            bsonType: "date"
+          },
+          status: {
+            enum: ["borrowed", "returned", "overdue"]
+          }
+        }
+      }
+    }
+});
+
+// Insert books data
+const books = db.books.insertMany([
+  { title: "The Hobbit", author: "J.R.R. Tolkien", publishedYear: 1937, genre: ["Fantasy", "Adventure"], availableCopies: 3, reviews: [] },
+  { title: "1984", author: "George Orwell", publishedYear: 1949, genre: ["Dystopian", "Science Fiction"], availableCopies: 5, reviews: [] },
+  { title: "To Kill a Mockingbird", author: "Harper Lee", publishedYear: 1960, genre: ["Fiction"], availableCopies: 2, reviews: [] },
+  { title: "The Great Gatsby", author: "F. Scott Fitzgerald", publishedYear: 1925, genre: ["Classic"], availableCopies: 4, reviews: [] },
+  { title: "Moby Dick", author: "Herman Melville", publishedYear: 1851, genre: ["Adventure"], availableCopies: 1, reviews: [] },
+  { title: "Pride and Prejudice", author: "Jane Austen", publishedYear: 1813, genre: ["Romance"], availableCopies: 6, reviews: [] },
+  { title: "War and Peace", author: "Leo Tolstoy", publishedYear: 1869, genre: ["Historical"], availableCopies: 3, reviews: [] },
+  { title: "The Catcher in the Rye", author: "J.D. Salinger", publishedYear: 1951, genre: ["Fiction"], availableCopies: 2, reviews: [] },
+  { title: "Harry Potter and the Sorcerer's Stone", author: "J.K. Rowling", publishedYear: 1997, genre: ["Fantasy"], availableCopies: 8, reviews: [] },
+  { title: "The Lord of the Rings", author: "J.R.R. Tolkien", publishedYear: 1954, genre: ["Fantasy", "Adventure"], availableCopies: 5, reviews: [] }
+])
+const bookIds = books.insertedIds;
+
+// Insert users data
+const users = db.users.insertMany([
+  { name: "Alice Johnson", email: "alice@example.com", membershipDate: new Date(), borrowedBooks: [], reviewedBooks: [] },
+  { name: "Bob Smith", email: "bob@example.com", membershipDate: new Date(), borrowedBooks: [], reviewedBooks: [] },
+  { name: "Charlie Brown", email: "charlie@example.com", membershipDate: new Date(), borrowedBooks: [], reviewedBooks: [] },
+  { name: "Diana Prince", email: "diana@example.com", membershipDate: new Date(), borrowedBooks: [], reviewedBooks: [] },
+  { name: "Ethan Hunt", email: "ethan@example.com", membershipDate: new Date(), borrowedBooks: [], reviewedBooks: [] }
+])
+const userIds = users.insertedIds;
+  
+// Insert borrowRecords data
+db.borrowRecords.insertMany([
+  { userId: userIds[0], bookId: bookIds[0], borrowDate: new Date(), status: "borrowed" },
+  { userId: userIds[0], bookId: bookIds[1], borrowDate: new Date(), status: "returned", returnDate: new Date() },
+  { userId: userIds[1], bookId: bookIds[2], borrowDate: new Date(), status: "borrowed" },
+  { userId: userIds[1], bookId: bookIds[3], borrowDate: new Date(), status: "returned", returnDate: new Date() },
+  { userId: userIds[2], bookId: bookIds[4], borrowDate: new Date(), status: "borrowed" },
+  { userId: userIds[2], bookId: bookIds[5], borrowDate: new Date(), status: "returned", returnDate: new Date() },
+  { userId: userIds[3], bookId: bookIds[6], borrowDate: new Date(), status: "borrowed" },
+  { userId: userIds[3], bookId: bookIds[7], borrowDate: new Date(), status: "returned", returnDate: new Date() },
+  { userId: userIds[4], bookId: bookIds[8], borrowDate: new Date(), status: "borrowed" },
+  { userId: userIds[4], bookId: bookIds[9], borrowDate: new Date(), status: "returned", returnDate: new Date() },
+  { userId: userIds[0], bookId: bookIds[2], borrowDate: new Date(), status: "borrowed" },
+  { userId: userIds[1], bookId: bookIds[5], borrowDate: new Date(), status: "returned", returnDate: new Date() },
+  { userId: userIds[2], bookId: bookIds[8], borrowDate: new Date(), status: "borrowed" },
+  { userId: userIds[3], bookId: bookIds[0], borrowDate: new Date(), status: "returned", returnDate: new Date() },
+  { userId: userIds[4], bookId: bookIds[1], borrowDate: new Date(), status: "borrowed" }
+]);
+
+// Update users borrowedBooks array
+db.borrowRecords.find().forEach(record => {
+  db.users.updateOne(
+    { _id: record.userId },
+    { $addToSet: { borrowedBooks: record.bookId } }
+  );
+});
+
+// add review to book  
+let book = db.books.findOne({ title: "The Hobbit" });
+let user = db.users.findOne({ name: "Bob Smith" });
+db.books.updateOne(
+  { _id: book._id },
+  { $push: { reviews: { userId: user._id, rating: 5, comment: "An amazing book" } } }
+);
+
+
+//====================== Query ===================================
+// Show titles & copies
+db.books.find({} , {title: 1, availableCopies: 1, _id: 0 })
+
+// Users with borrowed books
+db.users.aggregate([
+  { $lookup: { from: "borrowRecords", localField: "_id", foreignField: "userId", as: "borrowRecords"}},
+  { $unwind: "$borrowRecords" },         
+  { $lookup: {from: "books", localField: "borrowRecords.bookId", foreignField: "_id", as: "bookDetails"}},
+  { $unwind: "$bookDetails" },          
+  { $project: { _id: 0, name: 1, title: "$bookDetails.title"}}
+]);
+
+// Borrow records with book info
+db.borrowRecords.aggregate([ 
+  { $lookup: { from: "books", localField: "bookId", foreignField: "_id", as: "bookDetails" }}, 
+  { $project: { _id: 0, title: "$bookDetails.title", author: "$bookDetails.author", availableCopies: "$bookDetails.availableCopies" }} 
+]);
+
+// Users with no borrowed books
+db.users.find(
+  { borrowedBooks: { $exists: true, $size: 0 } },
+  { _id: 0, name: 1, email: 1 }
+);
+
+// Users borrowed more than 1
+db.users.aggregate([
+  { $match: { borrowedBooks: { $exists: true, $type: "array" }}},
+  { $addFields: {borrowedCount: { $size: "$borrowedBooks" }}},
+  { $match: { borrowedCount: { $gt: 1 } }},
+  { $project: { _id: 0, name: 1, email: 1, borrowedCount: 1}}
+]);
+
+// Books without reviews
+db.books.find(
+  { reviews: { $exists: true, $size: 0 }},
+  { _id: 0, title: 1, author: 1 }
+);
+
+// Most recent borrowed book
+db.borrowRecords.aggregate([
+  { $sort: { borrowDate: -1 } },
+  { $limit: 1 },
+  { $lookup: { from: "books", localField: "bookId", foreignField: "_id", as: "bookDetails" }},
+  { $project: { _id: 0, "bookDetails.title": 1, "bookDetails.author": 1, "bookDetails.publishedYear": 1, "bookDetails.genre": 1, "bookDetails.availableCopies": 1}}
+]);
+
+//====================== Advanced queries ======================
+
+// top 3 rated books
+db.books.aggregate([
+  { $unwind: "$reviews" }, 
+  { $group: { _id: "$_id", title: { $first: "$title" }, author: { $first: "$author" }, avgRating: { $avg: "$reviews.rating" }}}, 
+  { $sort: { avgRating: -1 } }, 
+  { $limit: 3 } 
+]);
+
+// books reviewed by user
+db.books.find(
+  { "reviews.userId" : user._id }, 
+  { _id: 0 , title: 1 , author: 1 , publishedYear: 1 }
+);
+
+// copies per genre
+db.books.aggregate([
+  { $unwind: "$genre" },
+  { $group: { _id: "$genre", totalAvailableCopies: { $sum: "$availableCopies" }}},
+  { $project: { _id: 0, genre: "$_id", totalAvailableCopies: 1 }}
+]);
+
+// books sorted by year
+db.books.find(
+  {}, 
+  { _id: 0, title: 1, author: 1, publishedYear: 1 }
+).sort({ publishedYear: -1 });
+
+// users with 3+ borrowed
+db.users.aggregate([ 
+  { $match: { borrowedBooks: { $exists: true, $type: "array" } } }, 
+  { $addFields: { count: { $size: "$borrowedBooks" } } }, 
+  { $match: { count: { $gte: 3 } } }, 
+  { $project: { _id: 0, name: 1, email: 1, count: 1 } } 
+]);
+
+//==================== Aggregation Pipeline Tasks =========================
+
+// Find top 3 books by average review rating
+db.books.aggregate([ 
+  { $unwind: "$reviews" }, 
+  { $group: { _id: "$_id", title: { $first: "$title" }, author: { $first: "$author" }, avgRating: { $avg: "$reviews.rating" } } }, 
+  { $sort: { avgRating: -1 } }, 
+  { $limit: 3 } 
+]);
+
+// Find the book with the most reviews
+db.books.aggregate([
+  { $project: { title: 1, author: 1, count: { $size: "$reviews" } }},
+  { $sort: { count: -1 } },
+  { $limit: 1 }
+]);
+
+// Find top 3 users by borrowed books count
+db.users.aggregate([
+  { $project: { name: 1, borrowedCount: { $size: "$borrowedBooks" } }},
+  { $sort: { borrowedCount: -1 } },
+  { $limit: 3 }
+]);
+
+//================== Data Modification ==========================
+
+// Update available copies for "The Hobbit"
+db.books.updateOne(
+  { title: "The Hobbit" },
+  { $set: { availableCopies: 5 } }
+)
+
+// Delete borrow records of a specific user
+db.borrowRecords.deleteMany({
+  userId: ObjectId("68983f2c4d93b22dedc4e4a6")
+});
+
+// Update book title from "The Lord of the Rings" to "Ankit Tiwari"
+db.books.updateOne(
+  { title: "The Lord of the Rings" },
+  { $set: { title: "Ankit Tiwari" } }
+);
+
+// Add a review to book "1984"
+db.books.updateOne( 
+  { title: "1984" }, 
+  { $push: { reviews: { userId: ObjectId("68983f924d93b22dedc4e4af"), rating: 4, comment: "Must Read Book, Amazing" } } } 
+);
+
+// Mark borrow record as returned with return date
+db.borrowRecords.updateOne(
+  { _id: ObjectId("68983f924d93b22dedc4e4b3") },
+  { $set: { status: "Returned", returnDate: new Date() } }
+);
+
+// ================== Database Constraints & Indexing ========================
+
+// Unique email index 
+db.users.createIndex({ email: 1 },{ unique: true });
+
+// Index on title
+db.books.createIndex({ title: 1 });
+
+// Validate availableCopies field  
+db.runCommand({
+  collMod: 'books',
+  validator: { $jsonSchema: { properties: { availableCopies: { bsonType: 'int', minimum: 0 }}}
+  }
+});
+
+// Compound index user-book 
+db.borrowRecords.createIndex({ userId: 1, bookId: 1 });
+
+
